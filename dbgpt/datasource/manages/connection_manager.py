@@ -14,6 +14,7 @@ from dbgpt.datasource.rdbms.conn_mysql import MySQLConnect
 from dbgpt.datasource.rdbms.conn_postgresql import PostgreSQLDatabase
 from dbgpt.datasource.rdbms.conn_sqlite import SQLiteConnect
 from dbgpt.datasource.rdbms.conn_starrocks import StarRocksConnect
+from dbgpt.datasource.rdbms.conn_tidb import TiDBConnect
 from dbgpt.rag.summary.db_summary_client import DBSummaryClient
 from dbgpt.storage.schema import DBType
 from dbgpt.util.executor_utils import ExecutorFactory

@@ -65,4 +65,5 @@ export const dbMapper: Record<DBType, { label: string; icon: string; desc: strin
   },
   spark: { label: 'Spark', icon: '/icons/spark.png', desc: 'Unified engine for large-scale data analytics.' },
   space: { label: 'Space', icon: '/icons/knowledge.png', desc: 'knowledge analytics.' },
+  tidb: { label: 'TiDB', icon: '/icons/tidb.png', desc: 'TIDB delivers reliable SQL at scale and real-time analytics in ONE database.' },
 };

@@ -52,7 +52,15 @@ def _get_db_engine(
     if db_type is None or db_type == DBType.Mysql:
         # default database
         db_engine = create_engine(
-            f"mysql+pymysql://{CFG.LOCAL_DB_USER}:{CFG.LOCAL_DB_PASSWORD}@{CFG.LOCAL_DB_HOST}:{CFG.LOCAL_DB_PORT}/{database}",
+            f"mysql+pymysql://{CFG.LOCAL_DB_USER}:{CFG.LOCAL_DB_PASSWORD}@{CFG.LOCAL_DB_HOST}:{CFG.LOCAL_DB_PORT}/{database}"
+            f"?ssl_verify_cert=true&ssl_verify_identity=true",
+            echo=True,
+        )
+    elif db_type == DBType.TiDB:
+        # default database
+        db_engine = create_engine(
+            f"mysql+pymysql://{CFG.LOCAL_DB_USER}:{CFG.LOCAL_DB_PASSWORD}@{CFG.LOCAL_DB_HOST}:{CFG.LOCAL_DB_PORT}/{database}"
+            f"?ssl_verify_cert=true&ssl_verify_identity=true",
             echo=True,
         )
     else:

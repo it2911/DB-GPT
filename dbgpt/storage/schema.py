@@ -20,6 +20,7 @@ class DBType(Enum):
     StarRocks = DbInfo("starrocks")
     Spark = DbInfo("spark", True)
     Doris = DbInfo("doris")
+    TiDB = DbInfo("tidb")
 
     def value(self):
         return self._value_.name
