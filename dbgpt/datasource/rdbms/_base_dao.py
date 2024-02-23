@@ -60,7 +60,7 @@ def _get_db_engine(
         # default database
         db_engine = create_engine(
             f"mysql+pymysql://{CFG.LOCAL_DB_USER}:{CFG.LOCAL_DB_PASSWORD}@{CFG.LOCAL_DB_HOST}:{CFG.LOCAL_DB_PORT}/{database}"
-            f"?ssl_verify_cert=true&ssl_verify_identity=true",
+            f"?ssl_ca=/etc/ssl/certs/ca-certificates.crt&ssl_verify_cert=true&ssl_verify_identity=true",
             echo=True,
         )
     else:
