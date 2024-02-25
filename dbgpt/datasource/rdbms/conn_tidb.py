@@ -57,9 +57,8 @@ class TiDBConnect(RDBMSDatabase):
         cursor = session.execute(
             text(
                 f"""
-                SELECT DISTINCT grantee, privilege_type
-                FROM information_schema.role_table_grants
-                WHERE grantee = CURRENT_USER;"""
+                SELECT DISTINCT * FROM information_schema.SCHEMA_PRIVILEGES 
+                WHERE GRANTEE = CONCAT('\'', REPLACE(CURRENT_USER(), '@', '\'@\''), '\'');"""
             )
         )
         grants = cursor.fetchall()
