@@ -57,7 +57,7 @@ class TiDBConnect(RDBMSDatabase):
         cursor = session.execute(
             text(
                 f"""
-                SELECT DISTINCT * FROM information_schema.SCHEMA_PRIVILEGES 
+                SELECT * FROM information_schema.SCHEMA_PRIVILEGES 
                 WHERE GRANTEE = CONCAT('\'', REPLACE(CURRENT_USER(), '@', '\'@\''), '\'');"""
             )
         )
