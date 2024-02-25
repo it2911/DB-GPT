@@ -203,7 +203,18 @@ class TiDBConnect(RDBMSDatabase):
         session = self._db_sessions()
         cursor = session.execute(
             text(
-                f"SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '{table_name}'"
+                f"""
+                SELECT 
+                    INDEX_NAME AS indexname,
+                    GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC SEPARATOR ', ') AS columns
+                FROM 
+                    information_schema.STATISTICS
+                WHERE 
+                    TABLE_SCHEMA = database() AND 
+                    TABLE_NAME = {table_name}
+                GROUP BY 
+                    INDEX_NAME;
+                """
             )
         )
         indexes = cursor.fetchall()
