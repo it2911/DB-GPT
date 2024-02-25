@@ -110,7 +110,7 @@ class TiDBConnect(RDBMSDatabase):
         session = self._db_sessions()
         cursor = session.execute(
             text(
-                "SELECT DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = CONCAT('''', database(), '''');"
+                "SELECT DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = database();"
             )
         )
         character_set = cursor.fetchone()[0]
