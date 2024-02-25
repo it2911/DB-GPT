@@ -53,7 +53,17 @@ class TiDBConnect(RDBMSDatabase):
 
     def get_grants(self):
         """TODO."""
-        return []
+        session = self._db_sessions()
+        cursor = session.execute(
+            text(
+                f"""
+                SELECT GRANTEE, PRIVILEGE_TYPE
+                FROM information_schema.TABLE_PRIVILEGES
+                WHERE GRANTEE = CONCAT('''', CURRENT_USER(), '''');"""
+            )
+        )
+        grants = cursor.fetchall()
+        return grants
 
     def get_collation(self):
         """Get collation."""
@@ -100,7 +110,7 @@ class TiDBConnect(RDBMSDatabase):
         session = self._db_sessions()
         cursor = session.execute(
             text(
-                "SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = current_database();"
+                "SELECT DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = current_database();"
             )
         )
         character_set = cursor.fetchone()[0]
@@ -140,7 +150,7 @@ class TiDBConnect(RDBMSDatabase):
 
     def get_database_list(self):
         session = self._db_sessions()
-        cursor = session.execute(text("SELECT datname FROM pg_database;"))
+        cursor = session.execute(text("SHOW databases;"))
         results = cursor.fetchall()
         return [
             d[0] for d in results if d[0] not in ["template0", "template1", "postgres"]
@@ -148,7 +158,7 @@ class TiDBConnect(RDBMSDatabase):
 
     def get_database_names(self):
         session = self._db_sessions()
-        cursor = session.execute(text("SELECT datname FROM pg_database;"))
+        cursor = session.execute(text("SHOW databases;"))
         results = cursor.fetchall()
         return [
             d[0] for d in results if d[0] not in ["template0", "template1", "postgres"]
@@ -159,20 +169,15 @@ class TiDBConnect(RDBMSDatabase):
 
     def table_simple_info(self):
         _sql = f"""
-            SELECT table_name, string_agg(column_name, ', ') AS schema_info
+            SELECT TABLE_NAME, GROUP_CONCAT(COLUMN_NAME ORDER BY ORDINAL_POSITION SEPARATOR ', ') AS schema_info
             FROM (
-                SELECT c.relname AS table_name, a.attname AS column_name
-                FROM pg_catalog.pg_class c
-                JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-                JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
-                WHERE c.relkind = 'r'
-                AND a.attnum > 0
-                AND NOT a.attisdropped
-                AND n.nspname NOT LIKE 'pg_%'
-                AND n.nspname != 'information_schema'
-                ORDER BY c.relname, a.attnum
-            ) sub
-            GROUP BY table_name;
+                SELECT TABLES.TABLE_NAME, COLUMNS.COLUMN_NAME, COLUMNS.ORDINAL_POSITION
+                FROM information_schema.TABLES
+                JOIN information_schema.COLUMNS ON TABLES.TABLE_SCHEMA = COLUMNS.TABLE_SCHEMA AND TABLES.TABLE_NAME = COLUMNS.TABLE_NAME
+                WHERE TABLES.TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'metrics_schema', 'inspection_schema')
+                ORDER BY TABLES.TABLE_NAME, COLUMNS.ORDINAL_POSITION
+            ) AS sub
+            GROUP BY TABLE_NAME;
             """
         cursor = self.session.execute(text(_sql))
         results = cursor.fetchall()
@@ -184,11 +189,9 @@ class TiDBConnect(RDBMSDatabase):
         cursor = session.execute(
             text(
                 f"""
-                SELECT c.column_name, c.data_type, c.column_default, c.is_nullable, d.description
-                FROM information_schema.columns c
-                LEFT JOIN pg_catalog.pg_description d
-                ON (c.table_schema || '.' || c.table_name)::regclass::oid = d.objoid AND c.ordinal_position = d.objsubid
-                WHERE c.table_name='{table_name}' AND c.table_schema='{schema_name}'
+                SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT, COLUMN_TYPE
+                FROM information_schema.COLUMNS
+                WHERE TABLE_SCHEMA = current_database() AND TABLE_NAME = '{table_name}';
                 """
             )
         )
