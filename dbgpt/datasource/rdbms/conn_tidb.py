@@ -211,7 +211,7 @@ class TiDBConnect(RDBMSDatabase):
                     information_schema.STATISTICS
                 WHERE 
                     TABLE_SCHEMA = database() AND 
-                    TABLE_NAME = {table_name}
+                    TABLE_NAME = '{table_name}'
                 GROUP BY 
                     INDEX_NAME;
                 """
