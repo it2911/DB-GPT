@@ -53,16 +53,7 @@ class TiDBConnect(RDBMSDatabase):
 
     def get_grants(self):
         """TODO."""
-        session = self._db_sessions()
-        cursor = session.execute(
-            text(
-                f"""
-                SELECT * FROM information_schema.SCHEMA_PRIVILEGES 
-                WHERE GRANTEE = CONCAT('\'', REPLACE(CURRENT_USER(), '@', '\'@\''), '\'');"""
-            )
-        )
-        grants = cursor.fetchall()
-        return grants
+        return []
 
     def get_collation(self):
         """Get collation."""
