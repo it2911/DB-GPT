@@ -37,12 +37,12 @@ class TiDBConnect(RDBMSDatabase):
     def _sync_tables_from_db(self) -> Iterable[str]:
         table_results = self.session.execute(
             text(
-                "SELECT tablename FROM information_schema.TABLES WHERE TABLE_SCHEMA = database()"
+                "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = database()"
             )
         )
         view_results = self.session.execute(
             text(
-                "SELECT tablename FROM information_schema.TABLES WHERE TABLE_SCHEMA = database()"
+                "SELECT TABLE_NAME FROM information_schema.VIEWS WHERE TABLE_SCHEMA = database()"
             )
         )
         table_results = set(row[0] for row in table_results)
