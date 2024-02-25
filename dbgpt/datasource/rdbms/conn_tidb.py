@@ -13,7 +13,7 @@ class TiDBConnect(RDBMSDatabase):
     """
 
     db_type: str = "tidb"
-    db_dialect: str = "tidb"
+    db_dialect: str = "mysql"
     driver: str = "mysql+pymysql"
 
     @classmethod
